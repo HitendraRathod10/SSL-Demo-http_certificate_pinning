@@ -30,6 +30,20 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
+  SecureHttpClient getClient(List<String> allowedSHAFingerprints) {
+    final secureClient = SecureHttpClient.build([
+      '41 04 B7 ff F9 ba 37 4f 21 6d 34 49 A0 2f FD 0a 1E 95 82 92 2D 11 53 91 F8 9e BD aa 44 99 C0 DC'
+    ]);
+    secureClient
+        .get(Uri.parse('https://www.whph.com.au/wp-json/v1/wpsl_stores_list'))
+        .then((value) {
+      log("secureClient :_:_ ${value.body}");
+    }, onError: (e) {
+      log("eeeeeeeeeeeeee :_:_ ${e}");
+    });
+    return secureClient;
+  }
+
   // Platform messages are asynchronous, so we initialize in an async method.
   check(
       String url,
@@ -55,12 +69,13 @@ class _MyAppState extends State<MyApp> {
           sha: sha,
           allowedSHAFingerprints: allowedShA1FingerprintList,
           timeout: timeout);
+      log("checkMsg success ::: $checkMsg");
 
       // If the widget was removed from the tree while the asynchronous platform
       // message was in flight, we want to discard the reply rather than calling
       // setState to update our non-existent appearance.
       if (!mounted) return;
-
+      getClient(allowedShA1FingerprintList);
       _messengerKey.currentState?.showSnackBar(
         SnackBar(
           content: Text(checkMsg),
